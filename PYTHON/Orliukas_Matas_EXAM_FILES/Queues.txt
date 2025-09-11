@@ -1,0 +1,4 @@
+RollerCoaster,50
+Flying Boat, 21
+Ferris Wheel,15
+Chairoplanes,30
