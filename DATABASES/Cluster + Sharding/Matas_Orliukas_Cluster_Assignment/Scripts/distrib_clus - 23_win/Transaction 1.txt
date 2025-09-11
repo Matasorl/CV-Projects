@@ -1,0 +1,34 @@
+Transaction 1:
+const session = db.getMongo().startSession();
+const patients = session.getDatabase("diabetesDB").patient;
+
+session.startTransaction();
+
+try {
+    const patient = patients.findOne({
+        Sex: 0,
+        HvyAlcoholConsump: 1
+    });
+
+    if (patient) {
+        const alcoholAmount = Math.floor(Math.random() * 10) + 1;
+        patients.updateOne(
+            { _id: patient._id },
+            { $set: { AlcoholAmount: alcoholAmount } }
+        );
+        print("Updated patient with AlcoholAmount:", alcoholAmount);
+    } else {
+        print("No suitable male patient found.");
+    }
+
+    session.commitTransaction();
+    print("Transaction 1 committed.");
+} catch (e) {
+    print("Transaction 1 failed:", e);
+    session.abortTransaction();
+}
+
+session.endSession();
+
+// Find changed person
+db.patient.findOne({ AlcoholAmount: { $exists: true } });

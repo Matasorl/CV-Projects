@@ -1,0 +1,1 @@
+mongosh --shell 1.2config_replSet.js

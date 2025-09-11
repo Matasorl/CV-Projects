@@ -1,0 +1,94 @@
+NoSQL Answers
+=============
+A config server is a special type of server used in a MongoDB sharded cluster. It stores the metadata and configuration settings for the entire cluster. This includes information about the distribution of data across shards.
+
+A config server should have 3 nodes exactly to form a replica set. If you have one config server node, it becomes a failure point thus it that server goes down the cluster becomes unavailable.
+
+The config server is responsible for storing metadata about the cluster, tracking chunk ranges and coordinating query routing.
+
+The config server does hold data but only metadata such as cluster info and chunk distribution instead of data like records of users or product information.
+
+
+
+
+In the context of a cluster, an interface typically refers to a router or entry point that clients use to interact with the cluster. In MongoDB, for example, this is called the mongos interface. It acts as a middleware or coordinator between the application and the sharded database cluster.
+
+The interface does not store application data, but it can temporarily cache routing information or metadata (like shard locations) to improve performance.
+
+There should be one interface (mongos) per application server (logic handling ie. java).
+
+Having only 1 interface makes it so if it fails clients cannot access the cluster even if the data is fine, it also introduces a performance bootleneck because all queries go through a single node thu slowing down the query reponse times.
+
+
+
+
+A shard is a horizontal partition of data in a database. Instead of storing all data in one place, it's split into smaller, more manageable pieces called shards. Each shard is a self-contained subset of the data and can be stored and managed independently.
+
+Shards are used to improve performance and scaliability, enable horizontal scaling and support high availability
+
+Number of shards depends on several factor including the size of individual shards, number of shards and data growth. Taking these into account help decide how many shards are needed in a cluster. It is also important to not have too many shards thus wasting memory and cpu or too few shards this not fully utilizing the cluster efficiently. Generally clusters should start with 5 shards and scale up taking into account the factors mentioned.
+
+
+
+
+
+In MongoDB, a chunk is a contiguous range of data within a sharded collection. When a collection is sharded, MongoDB divides the data into chunks based on the shard key (a field you choose to distribute the data across the shards).
+
+Each chunk is stored on a single shard, and chunks are moved between shards as needed to balance the data across the cluster. Chunks help MongoDB distribute data evenly across the cluster, and they allow for efficient management of the data at scale.
+
+By default the chunk size in MonoDB is set to 64mb, to change the size of the chunk by changing the value of the settings of the chunk size id before creating the cluster or updating the value through the command db.settings.updateOne(
+        { _id: "chunksize" },
+        { $set: { _id: "chunksize", value: <sizeInMB> } },
+        { upsert: true }
+    )
+
+
+
+MongoDB shards a collection through multiple steps, firstly it selects a shard key, once the key is selected you use the shardCollection command on the collection to be sharded, MongoDB then splits the data into chunks each containing a range of data based on the shard key, the chunks are then distributed across different shards in the cluster, MongoDB can then if the chunks are distributed unevenly it can move chunks between shards to maintain even data distribution.
+
+A shard key is a field or set of fields in a MongoDB collection that is used to determine how the data is distributed across the shards in a sharded cluster. The shard key is crucial for partitioning data in a way that optimizes performance and scalability. It is the key that MongoDB uses to split and distribute documents among different shards in the cluster.
+
+I created the shard key on Age and BMI because the values of both age and bmi are on a wide range thus allowing distributing data across multiple shards evenly and these fields are commonly used in queries.
+
+
+
+
+
+Migration in the context of a MongoDB sharded cluster refers to the process of moving chunks of data from one shard to another to maintain an even distribution of data across the cluster. This ensures that no single shard becomes too overloaded or underutilized, which could impact performance and scalability.
+
+Firstly MongoDB identifies a chunk that is too large compared to other chunks, it then selects a shard to move the chunk to taking into account the distribution of data, it then copies the chunks data across from source to destination shard, once the data has been copied it performs a final commit to complete the migration, then the chunk from the source shard is removed
+
+A process to avoid is too frequent migration as it can significantly impact the performance of a cluster as it causes overhead, this can be caused by poor shard key selection or too large of chunks 
+
+
+
+
+
+
+
+In MongoDB, splitting refers to the process of dividing a chunk of data into smaller, more manageable pieces. This is done to ensure that chunks do not grow too large, which helps maintain a balanced distribution of data across the shards in a sharded cluster. The splitting process typically occurs when a chunk exceeds the configured chunk size (64 MB by default) or when the data grows and requires more distribution.
+
+Collection: orders
+Shard Key: order_id
+Chunk Size Limit: 64 MB
+
+If a chunk contains order_id values from 1000 to 2000.
+The chunk exceeds 64 MB, so MongoDB splits it.
+MongoDB splits at the middle, around order_id 1500.
+Chunk 1: order_id 1000–1500
+Chunk 2: order_id 1501–2000
+Two smaller chunks are created.
+MongoDB may move these chunks to different shards for balanced data distribution.
+
+
+
+
+
+
+
+
+
+
+
+
+

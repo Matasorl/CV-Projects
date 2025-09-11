@@ -1,0 +1,67 @@
+Transaction 2:
+const session = db.getMongo().startSession();
+const patients = session.getDatabase("diabetesDB").patient;
+
+session.startTransaction();
+
+try {
+    // Female patient in excellent health and active
+    const female = patients.findOne({
+        Sex: 1,
+        GenHlth: 1,
+        PhysActivity: 1
+    });
+
+    if (female) {
+        const hours = Math.floor(Math.random() * 3) + 1;
+        patients.updateOne(
+            { _id: female._id },
+            { $set: { DailyExerciseHours: hours } }
+        );
+        print("Female patient updated with DailyExerciseHours:", hours);
+    } else {
+        print("No suitable female patient found.");
+    }
+
+    // Male patient in fair or good health (GenHlth: 3 or 4)
+    const male = patients.findOne({
+        Sex: 0,
+        GenHlth: { $in: [3, 4] }
+    });
+
+    if (male) {
+        patients.updateOne(
+            { _id: male._id },
+            { $inc: { BMI: 11 } }
+        );
+        print("Male patient's BMI increased by 11.");
+    } else {
+        print("No suitable male patient found.");
+    }
+
+    session.commitTransaction();
+    print("Transaction 2 committed.");
+} catch (e) {
+    print("Transaction 2 failed:", e);
+    session.abortTransaction();
+}
+
+session.endSession();
+
+// Find changed person
+db.patient.find({
+  Sex: 1,
+  GenHlth: 1,
+  PhysActivity: 1,
+  DailyExerciseHours: { $exists: true }
+}).pretty()
+
+// Find changed person
+db.patient.find({
+  Sex: 0,
+  GenHlth: { $in: [3, 4] }
+}).sort({ updatedAt: -1 }).limit(5).pretty()
+
+
+
+

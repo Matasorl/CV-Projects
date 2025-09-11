@@ -1,0 +1,81 @@
+/* Apply background color */
+.root {
+    -fx-background-color: #f0f8ff; /* Light blue background */
+}
+
+/* Style labels */
+.label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #003366; /* Darker blue for contrast */
+}
+
+/* Style text fields */
+.text-field {
+    -fx-background-color: white;
+    -fx-border-color: #59bfff;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+}
+
+/* Style text areas */
+.text-area {
+    -fx-background-color: white;
+    -fx-border-color: #59bfff;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+}
+
+/* Style buttons */
+.button {
+    -fx-background-color: #59bfff;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 8px 15px;
+    -fx-border-radius: 5px;
+    -fx-border-color: #007acc;
+    -fx-border-width: 2px;
+}
+
+/* Button hover effect */
+.button:hover {
+    -fx-background-color: #007acc;
+}
+
+/* Style combo boxes */
+.combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #59bfff;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+}
+
+/* Style grid pane gaps */
+.grid-pane {
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+}
+
+/* Style tab pane */
+.tab-pane {
+    -fx-tab-min-width: 100px;
+    -fx-tab-max-width: 200px;
+}
+
+/* Style selected tab */
+.tab:selected {
+    -fx-background-color: #59bfff;
+    -fx-text-fill: white;
+}
+
+/* Style alert dialogs */
+.dialog-pane {
+    -fx-background-color: #f0f8ff;
+    -fx-border-color: #59bfff;
+}
+
+/* Style purchase status label */
+.label:disabled {
+    -fx-text-fill: red;
+    -fx-font-weight: bold;
+}
